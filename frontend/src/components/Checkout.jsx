@@ -12,7 +12,7 @@ export default function Checkout({ setCurrentPage }) {
     state: '',
     pincode: ''
   });
-  const [paymentMethod, setPaymentMethod] = useState('cod');
+  const [paymentMethod, setPaymentMethod] = useState('upi');
   const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
@@ -51,7 +51,7 @@ export default function Checkout({ setCurrentPage }) {
           <p className="order-id">Order ID: #{Date.now().toString().slice(-8)}</p>
           <div className="success-details">
             <p><strong>Total Amount:</strong> ₹ {getTotalPrice().toLocaleString('en-IN')}</p>
-            <p><strong>Payment Method:</strong> {paymentMethod === 'cod' ? 'Cash on Delivery' : paymentMethod === 'upi' ? 'UPI' : 'Card'}</p>
+            <p><strong>Payment Method:</strong> {paymentMethod === 'upi' ? 'UPI' : paymentMethod === 'card' ? 'Credit/Debit Card' : 'Net Banking'}</p>
           </div>
           <button 
             className="continue-shopping-btn"
@@ -169,16 +169,6 @@ export default function Checkout({ setCurrentPage }) {
                     <input
                       type="radio"
                       name="payment"
-                      value="cod"
-                      checked={paymentMethod === 'cod'}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                    />
-                    <span>Cash on Delivery (COD)</span>
-                  </label>
-                  <label className="payment-option">
-                    <input
-                      type="radio"
-                      name="payment"
                       value="upi"
                       checked={paymentMethod === 'upi'}
                       onChange={(e) => setPaymentMethod(e.target.value)}
@@ -199,7 +189,7 @@ export default function Checkout({ setCurrentPage }) {
               </div>
 
               <button type="submit" className="place-order-btn">
-                {paymentMethod === 'cod' ? 'Place Order' : 'Pay Now'}
+                Pay Now
               </button>
             </form>
           </div>

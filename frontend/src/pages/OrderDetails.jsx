@@ -238,11 +238,21 @@ export default function OrderDetails() {
                 <h2 style={{ marginBottom: 10 }}>Payment</h2>
                 <div style={{ display: 'grid', gap: 6 }}>
                   <div>
-                    <strong>Method:</strong> {order.paymentMethod}
+                    <strong>Method:</strong> {
+                      order.paymentMethod === 'card' ? 'Credit/Debit Card' :
+                      order.paymentMethod === 'upi' ? 'UPI' :
+                      order.paymentMethod === 'netbanking' ? 'Net Banking' :
+                      order.paymentMethod
+                    }
                   </div>
                   <div>
-                    <strong>Status:</strong> {order.isPaid ? 'Paid' : 'Not Paid'}
+                    <strong>Status:</strong> {order.isPaid ? 'Payment Successful' : 'Pending'}
                   </div>
+                  {order.paidAt && (
+                    <div>
+                      <strong>Paid On:</strong> {new Date(order.paidAt).toLocaleDateString('en-IN')}
+                    </div>
+                  )}
                 </div>
               </div>
             </>

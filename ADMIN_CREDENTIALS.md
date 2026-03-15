@@ -1,6 +1,7 @@
 # Admin Login
 
 Use the **same login form** as regular users (Login button in navbar).
+Use the **same login form** as regular users (Login button in navbar).
 
 ## Admin Credentials
 - **Email:** `admin@gmail.com`
@@ -14,3 +15,4 @@ After logging in as admin, you will be redirected to the Admin Dashboard. You ca
 - Manage products, categories, orders, users
 - Upload product images
 - Manage discounts & offers
+

@@ -1,6 +1,7 @@
 import Order from '../models/Order.js';
 
 const ALLOWED_STATUSES = ['Placed', 'Confirmed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'];
+const ALLOWED_PAYMENT_METHODS = ['upi', 'card', 'netbanking', 'qr_upi'];
 
 const generateTrackingNumber = () => {
   const rnd = Math.random().toString(36).slice(2, 8).toUpperCase();
@@ -24,6 +25,10 @@ const addOrderItems = async (req, res) => {
 
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'No order items' });
+    }
+
+    if (!ALLOWED_PAYMENT_METHODS.includes(paymentMethod)) {
+      return res.status(400).json({ message: 'Invalid payment method' });
     }
 
     const order = new Order({
@@ -147,4 +152,66 @@ const updateOrderStatus = async (req, res) => {
   res.json(updated);
 };
 
-export { addOrderItems, getMyOrders, getOrderById, getOrders, updateOrderStatus };
+// @desc    Confirm order payment (e.g. QR / manual confirmation)
+// @route   POST /api/orders/:id/payment-confirm
+// @access  Private (order owner or admin)
+const confirmOrderPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      paymentMethod,
+      paymentStatus,
+      paymentId,
+      transactionId,
+      amount,
+      timestamp,
+    } = req.body || {};
+
+    const order = await Order.findById(id);
+
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    const isAdmin = req.user?.role === 'admin' || req.user?.isAdmin;
+    const isOwner = String(order.user) === String(req.user?._id);
+
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ message: 'Access denied. You can only update your own orders.' });
+    }
+
+    if (order.isPaid) {
+      return res.status(400).json({ message: 'Order is already marked as paid' });
+    }
+
+    // Mark order as paid
+    order.isPaid = true;
+    order.paidAt = timestamp ? new Date(timestamp) : Date.now();
+    order.paymentResult = {
+      id: paymentId || transactionId || order.paymentResult?.id,
+      status: paymentStatus || 'Payment Successful',
+      transactionId: transactionId || order.paymentResult?.transactionId,
+      amount: typeof amount === 'number' ? amount : order.totalPrice,
+      method: paymentMethod || order.paymentMethod,
+      update_time: Date.now(),
+      email_address: req.user?.email || order.paymentResult?.email_address,
+    };
+
+    if (order.orderStatus === 'Placed') {
+      order.orderStatus = 'Confirmed';
+      order.statusHistory = Array.isArray(order.statusHistory) ? order.statusHistory : [];
+      order.statusHistory.push({ status: 'Confirmed', date: Date.now(), note: 'Payment confirmed (manual/QR)' });
+    }
+
+    const updatedOrder = await order.save();
+
+    return res.json({
+      message: 'Order payment confirmed successfully',
+      order: updatedOrder,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message || 'Failed to confirm order payment' });
+  }
+};
+
+export { addOrderItems, getMyOrders, getOrderById, getOrders, updateOrderStatus, confirmOrderPayment };

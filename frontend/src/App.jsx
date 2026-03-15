@@ -8,6 +8,8 @@ import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Profile from "./pages/Profile";
+import PaymentTestPage from "./pages/PaymentTestPage";
+import SimplePaymentPage from "./pages/SimplePaymentPage";
 import DesignYourBag from "./components/DesignYourBag";
 import DesignYourCarpet from "./components/DesignYourCarpet";
 import DesignYourBedsheet from "./components/DesignYourBedsheet";
@@ -20,6 +22,7 @@ import CustomizableCategories from "./pages/CustomizableCategories";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import AdminAuth from "./pages/AdminAuth.jsx";
 import UserDashboard from "./pages/UserDashboard.jsx";
+import CustomerDashboard from "./pages/CustomerDashboard.jsx";
 import AdminDashboard from "./pages/AdminDashboard.jsx";
 import AdminManageUsers from "./pages/AdminManageUsers.jsx";
 import UserRoute from "./components/UserRoute.jsx";
@@ -40,6 +43,8 @@ function App() {
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/payment-test" element={<PaymentTestPage />} />
+        <Route path="/simple-payment" element={<SimplePaymentPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/my-orders" element={<UserRoute><MyOrders /></UserRoute>} />
         <Route path="/orders/:id" element={<UserRoute><OrderDetails /></UserRoute>} />
@@ -61,6 +66,7 @@ function App() {
         <Route path="/admin/users" element={<AdminRoute><AdminManageUsers /></AdminRoute>} />
         <Route path="/user/home" element={<Home />} />
         <Route path="/user/dashboard" element={<UserDashboard />} />
+        <Route path="/customer/dashboard" element={<UserRoute><CustomerDashboard /></UserRoute>} />
         {/* Legacy routes for backward compatibility */}
         <Route path="/shop" element={<CategoryPage />} />
         <Route path="/bedsheets" element={<CategoryPage />} />

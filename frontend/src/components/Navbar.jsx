@@ -133,6 +133,9 @@ export default function Navbar() {
                       Admin Dashboard
                     </Link>
                   )}
+                  <Link to="/customer/dashboard" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
+                    Customer Dashboard
+                  </Link>
                   <Link to="/profile?tab=orders" className="profile-dropdown-item" onClick={() => setShowProfileMenu(false)}>
                     Orders
                   </Link>

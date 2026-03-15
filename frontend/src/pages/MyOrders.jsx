@@ -9,6 +9,26 @@ export default function MyOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const getPaymentStatus = (order) => {
+    return order.isPaid ? 'Payment Successful' : 'Pending';
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      'Placed': '#ffc107',
+      'Confirmed': '#17a2b8',
+      'Shipped': '#007bff',
+      'Out for Delivery': '#6f42c1',
+      'Delivered': '#28a745',
+      'Cancelled': '#dc3545'
+    };
+    return colors[status] || '#6c757d';
+  };
+
+  const getPaymentStatusColor = (isPaid) => {
+    return isPaid ? '#28a745' : '#ffc107';
+  };
+
   useEffect(() => {
     let isMounted = true;
 
@@ -87,7 +107,15 @@ export default function MyOrders() {
                       </p>
                     </div>
                     <div className="order-status">
-                      <span className={`status-badge ${order.orderStatus || ''}`}>{order.orderStatus}</span>
+                      <span className={`status-badge ${order.orderStatus || ''}`} style={{ backgroundColor: getStatusColor(order.orderStatus) }}>
+                        {order.orderStatus}
+                      </span>
+                      <span 
+                        className="status-badge" 
+                        style={{ backgroundColor: getPaymentStatusColor(order.isPaid), marginTop: '8px' }}
+                      >
+                        {getPaymentStatus(order)}
+                      </span>
                       <p className="order-total">₹ {Number(order.totalPrice || 0).toLocaleString('en-IN')}</p>
                     </div>
                   </div>

@@ -10,6 +10,9 @@ export default function Cart() {
   const [couponCode, setCouponCode] = useState('');
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCouponCode, setAppliedCouponCode] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // 'success' or 'error'
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
@@ -37,10 +40,37 @@ export default function Cart() {
     if (discountPercent !== undefined) {
       setDiscount(discountPercent);
       setCouponApplied(true);
-      alert(`Coupon applied! ${discountPercent > 0 ? `${discountPercent}% discount` : 'Free shipping'} applied.`);
+      setAppliedCouponCode(couponCode.toUpperCase());
+      setMessage(`Coupon applied! ${discountPercent > 0 ? `${discountPercent}% discount` : 'Free shipping'} applied.`);
+      setMessageType('success');
+      setCouponCode('');
+      
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 3000);
     } else {
-      alert('Invalid coupon code');
+      setMessage('Invalid coupon code');
+      setMessageType('error');
+      
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setMessage('');
+      }, 3000);
     }
+  };
+
+  const removeCoupon = () => {
+    setDiscount(0);
+    setCouponApplied(false);
+    setAppliedCouponCode('');
+    setMessage('Coupon removed successfully');
+    setMessageType('success');
+    
+    // Clear message after 3 seconds
+    setTimeout(() => {
+      setMessage('');
+    }, 3000);
   };
 
   const subtotal = getTotalPrice();
@@ -126,6 +156,18 @@ export default function Cart() {
                   </button>
                 </div>
               ))}
+              
+              {/* Continue Shopping Button - Below Cart Items */}
+              <div className="continue-shopping-section">
+                <Link to="/shop" className="continue-shopping-btn-improved">
+                  <span className="btn-icon">🛍️</span>
+                  <span className="btn-text">Continue Shopping</span>
+                  <span className="btn-arrow">→</span>
+                </Link>
+                <p className="continue-shopping-text">
+                  Keep browsing our amazing collection of customizable products
+                </p>
+              </div>
             </div>
 
             <div className="cart-summary">
@@ -133,21 +175,46 @@ export default function Cart() {
               
               {/* Coupon Code Section */}
               <div className="coupon-section">
-                <input
-                  type="text"
-                  placeholder="Enter coupon code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  className="coupon-input"
-                  disabled={couponApplied}
-                />
-                <button 
-                  className="apply-coupon-btn"
-                  onClick={applyCoupon}
-                  disabled={couponApplied || !couponCode.trim()}
-                >
-                  {couponApplied ? 'Applied' : 'Apply'}
-                </button>
+                {message && (
+                  <div className={`coupon-message ${messageType}`}>
+                    {message}
+                  </div>
+                )}
+                
+                {!couponApplied ? (
+                  <div className="coupon-input-group">
+                    <input
+                      type="text"
+                      placeholder="Enter coupon code"
+                      value={couponCode}
+                      onChange={(e) => setCouponCode(e.target.value)}
+                      className="coupon-input"
+                    />
+                    <button 
+                      className="apply-coupon-btn"
+                      onClick={applyCoupon}
+                      disabled={!couponCode.trim()}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                ) : (
+                  <div className="applied-coupon">
+                    <div className="coupon-info">
+                      <span className="coupon-code">{appliedCouponCode}</span>
+                      <span className="coupon-discount">
+                        {discount > 0 ? `${discount}% discount` : 'Free shipping'}
+                      </span>
+                    </div>
+                    <button 
+                      className="remove-coupon-btn"
+                      onClick={removeCoupon}
+                      title="Remove coupon"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
               </div>
 
               <div className="summary-row">
@@ -178,11 +245,6 @@ export default function Cart() {
               >
                 Proceed to Checkout
               </button>
-              <div className="cart-continue-wrap">
-                <Link to="/" className="continue-shopping-btn">
-                  Continue Shopping
-                </Link>
-              </div>
             </div>
           </div>
         </div>

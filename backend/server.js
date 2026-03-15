@@ -48,9 +48,13 @@ app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/tracking', trackingRoutes);
 
-app.get('/api/config/razorpay', (req, res) =>
-  res.send(process.env.RAZORPAY_KEY_ID)
-);
+app.get('/api/config/razorpay', (req, res) => {
+  const razorpayKey = process.env.RAZORPAY_KEY_ID;
+  if (!razorpayKey) {
+    return res.status(500).send('Payment gateway not configured');
+  }
+  res.send(razorpayKey);
+});
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

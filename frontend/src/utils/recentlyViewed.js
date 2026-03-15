@@ -24,6 +24,18 @@ export const getRecentlyViewed = () => {
   }
 };
 
+export const removeFromRecentlyViewed = (productId) => {
+  try {
+    const recent = getRecentlyViewed();
+    const updated = recent.filter(item => item.id !== productId);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    return updated;
+  } catch (error) {
+    console.error('Error removing from recently viewed:', error);
+    return getRecentlyViewed();
+  }
+};
+
 export const clearRecentlyViewed = () => {
   localStorage.removeItem(STORAGE_KEY);
 };

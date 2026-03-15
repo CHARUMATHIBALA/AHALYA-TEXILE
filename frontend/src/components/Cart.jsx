@@ -1,14 +1,33 @@
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useState } from 'react';
+import DummyPayment from './DummyPayment';
+import { clearCart as clearCartUtil } from '../utils/cartUtils';
+import './CartPaymentModal.css';
 
 export default function Cart({ setCurrentPage }) {
   const { cartItems, removeFromCart, updateQuantity, getTotalPrice, clearCart } = useCart();
+  const { user } = useAuth();
+  const [showPayment, setShowPayment] = useState(false);
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
       alert('Your cart is empty!');
       return;
     }
-    setCurrentPage('checkout');
+    setShowPayment(true);
+  };
+
+  const handlePaymentSuccess = (paymentResult) => {
+    console.log('Payment successful:', paymentResult);
+    // Clear cart after successful payment
+    clearCart();
+    clearCartUtil();
+  };
+
+  const handleOrderCreated = (orderData) => {
+    console.log('Order created:', orderData);
+    // Navigation will be handled by DummyPayment component
   };
 
   const handleRemove = (itemId) => {
@@ -16,6 +35,29 @@ export default function Cart({ setCurrentPage }) {
       removeFromCart(itemId);
     }
   };
+
+  // Show payment modal if checkout is initiated
+  if (showPayment) {
+    return (
+      <div className="payment-modal-overlay">
+        <div className="payment-modal">
+          <button 
+            className="close-modal-btn"
+            onClick={() => setShowPayment(false)}
+          >
+            ×
+          </button>
+          <DummyPayment
+            cartItems={cartItems}
+            totalPrice={getTotalPrice()}
+            user={user}
+            onPaymentSuccess={handlePaymentSuccess}
+            onOrderCreated={handleOrderCreated}
+          />
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
